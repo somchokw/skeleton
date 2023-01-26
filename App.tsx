@@ -1,61 +1,32 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
- *
- * @format
- */
-
-import React from 'react';
-import {useClipboard} from '@react-native-clipboard/clipboard';
-
-import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text} from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const App = () => {
-  const [data, setString] = useClipboard();
+  const [clipboardContent, setClipboardContent] = useState('');
+
+  useEffect(() => {
+    let interval: any;
+    const checkClipboard = async () => {
+      const content = await Clipboard.getString();
+      if (content !== clipboardContent) {
+        setClipboardContent(content);
+      }
+    };
+
+    // Check the clipboard every 500 milliseconds
+    interval = setInterval(checkClipboard, 500);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
-    <SafeAreaView>
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <View>
-            <Text>Scan</Text>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              width: '100%',
-              height: 100,
-              padding: 15,
-            }}>
-            <Text>result : {data}</Text>
-          </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <View>
+      <Text>Clipboard Content: {clipboardContent}</Text>
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
